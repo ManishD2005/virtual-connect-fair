@@ -1,7 +1,7 @@
 
 import { Link } from 'react-router-dom';
 import { MapPin, Users, Briefcase, ArrowRight } from 'lucide-react';
-import { Card, CardContent, CardFooter, CardHeader, CardImage, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
 export interface BoothProps {
@@ -26,13 +26,15 @@ const BoothCard = ({
   employeeCount,
 }: BoothProps) => {
   return (
-    <Card hover>
+    <Card className="hover:shadow-md transition-shadow">
       <div className="relative">
-        <CardImage
-          src={coverImage}
-          alt={`${name} cover`}
-          aspectRatio="video"
-        />
+        <div className="w-full overflow-hidden aspect-video">
+          <img
+            src={coverImage}
+            alt={`${name} cover`}
+            className="w-full h-full object-cover"
+          />
+        </div>
         <div className="absolute -bottom-8 left-6 w-16 h-16 rounded-xl bg-white border border-gray-100 shadow-sm overflow-hidden flex items-center justify-center p-2">
           <img
             src={logo}
@@ -71,10 +73,10 @@ const BoothCard = ({
           <Button 
             variant="ghost" 
             size="sm"
-            icon={<ArrowRight size={16} />}
-            iconPosition="right"
+            className="flex items-center"
           >
             Visit Booth
+            <ArrowRight size={16} className="ml-2" />
           </Button>
         </Link>
       </CardFooter>

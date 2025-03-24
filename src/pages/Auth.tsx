@@ -1,3 +1,4 @@
+
 import { useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
@@ -25,9 +26,10 @@ const Auth = () => {
         <Button
           variant="ghost"
           size="sm"
-          icon={<ArrowLeft size={16} />}
+          className="flex items-center"
           onClick={() => navigate('/')}
         >
+          <ArrowLeft size={16} className="mr-2" />
           Back to Home
         </Button>
       </div>
@@ -93,7 +95,7 @@ const Auth = () => {
                   </div>
 
                   <div>
-                    <Button type="submit" fullWidth size="lg">
+                    <Button type="submit" className="w-full" size="lg">
                       Sign In
                     </Button>
                   </div>

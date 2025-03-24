@@ -91,10 +91,10 @@ const Booths = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                icon={<ArrowLeft size={16} />}
-                className="mb-2"
+                className="mb-2 flex items-center"
                 onClick={() => navigate('/')}
               >
+                <ArrowLeft size={16} className="mr-2" />
                 Back to Home
               </Button>
               <h1 className="font-display text-3xl md:text-4xl font-medium mb-2">
@@ -107,19 +107,21 @@ const Booths = () => {
             <div className="mt-4 md:mt-0">
               <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-1 flex">
                 <Button
-                  variant={view === 'list' ? 'primary' : 'ghost'}
+                  variant={view === 'list' ? 'default' : 'ghost'}
                   size="sm"
-                  icon={<LayoutGrid size={16} />}
+                  className="flex items-center"
                   onClick={() => setView('list')}
                 >
+                  <LayoutGrid size={16} className="mr-2" />
                   List View
                 </Button>
                 <Button
-                  variant={view === 'floorplan' ? 'primary' : 'ghost'}
+                  variant={view === 'floorplan' ? 'default' : 'ghost'}
                   size="sm"
-                  icon={<Map size={16} />}
+                  className="flex items-center"
                   onClick={() => setView('floorplan')}
                 >
+                  <Map size={16} className="mr-2" />
                   Floor Plan
                 </Button>
               </div>

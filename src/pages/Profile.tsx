@@ -26,7 +26,7 @@ const Profile = () => {
                     <h2 className="font-display text-xl font-medium">John Doe</h2>
                     <p className="text-sm text-muted-foreground">Software Engineer</p>
                     <div className="mt-4 w-full">
-                      <Button variant="outline" fullWidth>
+                      <Button variant="outline" className="w-full">
                         Edit Profile
                       </Button>
                     </div>
@@ -190,8 +190,9 @@ const Profile = () => {
                       <Button
                         variant="ghost"
                         size="sm"
-                        icon={<Download size={16} />}
+                        className="flex items-center"
                       >
+                        <Download size={16} className="mr-2" />
                         Download
                       </Button>
                     </div>
