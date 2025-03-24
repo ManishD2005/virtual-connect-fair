@@ -2,8 +2,8 @@
 import { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { User, Mail, Phone, MapPin, Briefcase, BookOpen, Image, FileText, Download } from 'lucide-react';
 
 const Profile = () => {

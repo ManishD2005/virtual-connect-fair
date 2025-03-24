@@ -1,9 +1,8 @@
-
 import { useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import SignUpForm from '@/components/auth/SignUpForm';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 
 const Auth = () => {
   const [searchParams] = useSearchParams();

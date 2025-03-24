@@ -1,8 +1,8 @@
 
 import { Link } from 'react-router-dom';
 import { MapPin, Users, Briefcase, ArrowRight } from 'lucide-react';
-import { Card, CardContent, CardFooter, CardHeader, CardImage, CardTitle } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { Card, CardContent, CardFooter, CardHeader, CardImage, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 export interface BoothProps {
   id: string;

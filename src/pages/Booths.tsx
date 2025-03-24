@@ -5,7 +5,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import BoothCard, { BoothProps } from '@/components/booths/BoothCard';
 import FloorPlan from '@/components/booths/FloorPlan';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { ArrowLeft, LayoutGrid, Map } from 'lucide-react';
 
 const Booths = () => {
