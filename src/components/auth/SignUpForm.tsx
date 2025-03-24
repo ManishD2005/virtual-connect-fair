@@ -1,7 +1,9 @@
+
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowRight, Check, User, Briefcase } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 const SignUpForm = () => {
   const [searchParams] = useSearchParams();
@@ -173,12 +175,11 @@ const SignUpForm = () => {
             <div className="mt-8">
               <Button
                 type="submit"
-                fullWidth
                 size="lg"
-                icon={<ArrowRight size={18} />}
-                iconPosition="right"
+                className="w-full flex items-center justify-center gap-2"
               >
                 Continue
+                <ArrowRight size={18} />
               </Button>
             </div>
           </div>
@@ -318,18 +319,17 @@ const SignUpForm = () => {
               <Button
                 type="button"
                 variant="outline"
-                fullWidth
+                className="w-full"
                 onClick={() => setStep(1)}
               >
                 Back
               </Button>
               <Button
                 type="submit"
-                fullWidth
-                icon={<Check size={18} />}
-                iconPosition="right"
+                className="w-full flex items-center justify-center gap-2"
               >
                 Complete Setup
+                <Check size={18} />
               </Button>
             </div>
           </div>
