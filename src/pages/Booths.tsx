@@ -3,78 +3,16 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import BoothCard, { BoothProps } from '@/components/booths/BoothCard';
+import BoothCard from '@/components/booths/BoothCard';
 import FloorPlan from '@/components/booths/FloorPlan';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, LayoutGrid, Map } from 'lucide-react';
+import { useBooths } from '@/hooks/useBooths';
 
 const Booths = () => {
   const navigate = useNavigate();
   const [view, setView] = useState<'list' | 'floorplan'>('list');
-
-  // Mock data - in a real app this would come from an API
-  const boothsData: BoothProps[] = [
-    {
-      id: '1',
-      name: 'TechCorp Inc.',
-      logo: 'https://via.placeholder.com/150',
-      coverImage: 'https://via.placeholder.com/800x400',
-      location: 'San Francisco, CA',
-      industry: 'Technology',
-      openPositions: 12,
-      employeeCount: '1,000-5,000',
-    },
-    {
-      id: '2',
-      name: 'Global Health Solutions',
-      logo: 'https://via.placeholder.com/150',
-      coverImage: 'https://via.placeholder.com/800x400',
-      location: 'Boston, MA',
-      industry: 'Healthcare',
-      openPositions: 8,
-      employeeCount: '5,000-10,000',
-    },
-    {
-      id: '3',
-      name: 'Fintech Innovations',
-      logo: 'https://via.placeholder.com/150',
-      coverImage: 'https://via.placeholder.com/800x400',
-      location: 'New York, NY',
-      industry: 'Finance',
-      openPositions: 5,
-      employeeCount: '500-1,000',
-    },
-    {
-      id: '4',
-      name: 'Creative Media Group',
-      logo: 'https://via.placeholder.com/150',
-      coverImage: 'https://via.placeholder.com/800x400',
-      location: 'Los Angeles, CA',
-      industry: 'Media',
-      openPositions: 7,
-      employeeCount: '100-500',
-    },
-    {
-      id: '5',
-      name: 'EduLearn Systems',
-      logo: 'https://via.placeholder.com/150',
-      coverImage: 'https://via.placeholder.com/800x400',
-      location: 'Chicago, IL',
-      industry: 'Education',
-      openPositions: 4,
-      employeeCount: '100-500',
-    },
-    {
-      id: '6',
-      name: 'GreenEnergy Solutions',
-      logo: 'https://via.placeholder.com/150',
-      coverImage: 'https://via.placeholder.com/800x400',
-      location: 'Austin, TX',
-      industry: 'Energy',
-      openPositions: 6,
-      employeeCount: '1,000-5,000',
-    },
-  ];
+  const { data: booths, isLoading, error } = useBooths();
 
   const handleBoothClick = (id: string) => {
     navigate(`/booth/${id}`);
@@ -128,14 +66,59 @@ const Booths = () => {
             </div>
           </div>
 
-          {view === 'list' ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {boothsData.map((booth) => (
-                <BoothCard key={booth.id} {...booth} />
-              ))}
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-center">
+                <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                <p className="text-muted-foreground">Loading booths...</p>
+              </div>
             </div>
+          ) : error ? (
+            <div className="bg-red-50 text-red-800 rounded-lg p-4 mb-4">
+              An error occurred while loading booths. Please try again later.
+            </div>
+          ) : view === 'list' ? (
+            booths && booths.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {booths.map((booth) => (
+                  <BoothCard
+                    key={booth.id}
+                    id={booth.id}
+                    name={booth.name}
+                    logo={booth.logo}
+                    coverImage={booth.cover_image}
+                    location={booth.location}
+                    industry={booth.industry}
+                    openPositions={5} // This would ideally come from a count query
+                    employeeCount={booth.employee_count}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-gray-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <LayoutGrid size={24} className="text-gray-400" />
+                </div>
+                <h3 className="font-medium mb-2">No booths available</h3>
+                <p className="text-muted-foreground text-sm mb-4">
+                  There are currently no employer booths to display.
+                </p>
+              </div>
+            )
           ) : (
-            <FloorPlan booths={boothsData} onBoothClick={handleBoothClick} />
+            <FloorPlan 
+              booths={booths?.map(b => ({
+                id: b.id,
+                name: b.name,
+                logo: b.logo,
+                coverImage: b.cover_image,
+                location: b.location,
+                industry: b.industry,
+                openPositions: 5,
+                employeeCount: b.employee_count
+              })) || []} 
+              onBoothClick={handleBoothClick} 
+            />
           )}
         </div>
       </main>

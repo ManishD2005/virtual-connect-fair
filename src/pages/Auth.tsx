@@ -1,23 +1,33 @@
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import SignUpForm from '@/components/auth/SignUpForm';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Auth = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const type = searchParams.get('type') || 'login';
+  const { signIn, user, isLoading } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [type]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (user && !isLoading) {
+      navigate('/profile');
+    }
+  }, [user, isLoading, navigate]);
+
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, you'd handle authentication here
-    navigate('/profile');
+    await signIn(email, password);
   };
 
   return (
@@ -48,7 +58,7 @@ const Auth = () => {
                   </p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleLoginSubmit} className="space-y-4">
                   <div>
                     <label htmlFor="email" className="block text-sm font-medium mb-1">
                       Email
@@ -59,6 +69,8 @@ const Auth = () => {
                       type="email"
                       autoComplete="email"
                       required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/20"
                     />
                   </div>
@@ -78,6 +90,8 @@ const Auth = () => {
                       type="password"
                       autoComplete="current-password"
                       required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                       className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/20"
                     />
                   </div>
@@ -87,6 +101,8 @@ const Auth = () => {
                       id="remember-me"
                       name="remember-me"
                       type="checkbox"
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
                       className="h-4 w-4 text-primary focus:ring-primary/20 border-gray-300 rounded"
                     />
                     <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
@@ -95,8 +111,13 @@ const Auth = () => {
                   </div>
 
                   <div>
-                    <Button type="submit" className="w-full" size="lg">
-                      Sign In
+                    <Button 
+                      type="submit" 
+                      className="w-full" 
+                      size="lg"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? 'Signing in...' : 'Sign In'}
                     </Button>
                   </div>
                 </form>

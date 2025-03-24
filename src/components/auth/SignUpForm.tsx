@@ -4,10 +4,14 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowRight, Check, User, Briefcase } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 const SignUpForm = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const { signUp, isLoading } = useAuth();
   
   const defaultRole = searchParams.get('role') || 'jobseeker';
   const [role, setRole] = useState<'jobseeker' | 'employer'>(defaultRole as 'jobseeker' | 'employer');
@@ -28,14 +32,35 @@ const SignUpForm = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (step === 1) {
+      // Validate passwords match
+      if (formData.password !== formData.confirmPassword) {
+        toast({
+          title: 'Passwords do not match',
+          description: 'Please ensure both passwords match.',
+          variant: 'destructive',
+        });
+        return;
+      }
+      
       setStep(2);
     } else {
-      // In a real app, you'd handle registration here
-      console.log('Submitting registration with:', { role, ...formData });
-      navigate('/profile');
+      try {
+        await signUp(formData.email, formData.password, {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          role: role,
+          jobTitle: formData.jobTitle,
+          industry: formData.industry,
+          companyName: role === 'employer' ? formData.companyName : undefined,
+        });
+        
+        navigate('/profile');
+      } catch (error) {
+        console.error('Registration error:', error);
+      }
     }
   };
 
@@ -327,8 +352,9 @@ const SignUpForm = () => {
               <Button
                 type="submit"
                 className="w-full flex items-center justify-center gap-2"
+                disabled={isLoading}
               >
-                Complete Setup
+                {isLoading ? 'Creating Account...' : 'Complete Setup'}
                 <Check size={18} />
               </Button>
             </div>

@@ -30,16 +30,22 @@ const BoothCard = ({
       <div className="relative">
         <div className="w-full overflow-hidden aspect-video">
           <img
-            src={coverImage}
+            src={coverImage || 'https://via.placeholder.com/800x400'}
             alt={`${name} cover`}
             className="w-full h-full object-cover"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x400';
+            }}
           />
         </div>
         <div className="absolute -bottom-8 left-6 w-16 h-16 rounded-xl bg-white border border-gray-100 shadow-sm overflow-hidden flex items-center justify-center p-2">
           <img
-            src={logo}
+            src={logo || 'https://via.placeholder.com/150'}
             alt={`${name} logo`}
             className="max-w-full max-h-full object-contain"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150';
+            }}
           />
         </div>
       </div>

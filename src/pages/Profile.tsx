@@ -1,13 +1,49 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { User, Mail, Phone, MapPin, Briefcase, BookOpen, Image, FileText, Download } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Briefcase, FileText, Download, Calendar } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useProfile, useUploadResume } from '@/hooks/useProfile';
 
 const Profile = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('profile');
+  const { user, signOut, isLoading: authLoading } = useAuth();
+  const { data: profile, isLoading: profileLoading } = useProfile();
+  const { mutate: uploadResume, isPending: isUploading } = useUploadResume();
+  
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!user && !authLoading) {
+      navigate('/auth?type=login');
+    }
+  }, [user, authLoading, navigate]);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    
+    const file = e.target.files[0];
+    uploadResume(file);
+  };
+
+  if (authLoading || profileLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user || !profile) {
+    return null; // Will redirect via useEffect
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -23,8 +59,8 @@ const Profile = () => {
                     <div className="w-24 h-24 bg-gray-100 rounded-full mb-4 flex items-center justify-center border border-gray-200">
                       <User size={40} className="text-gray-400" />
                     </div>
-                    <h2 className="font-display text-xl font-medium">John Doe</h2>
-                    <p className="text-sm text-muted-foreground">Software Engineer</p>
+                    <h2 className="font-display text-xl font-medium">{profile.first_name} {profile.last_name}</h2>
+                    <p className="text-sm text-muted-foreground">{profile.job_title}</p>
                     <div className="mt-4 w-full">
                       <Button variant="outline" className="w-full">
                         Edit Profile
@@ -90,6 +126,14 @@ const Profile = () => {
                   </li>
                 </ul>
               </nav>
+              
+              <Button 
+                variant="outline" 
+                className="w-full text-destructive hover:bg-destructive/10"
+                onClick={() => signOut()}
+              >
+                Sign Out
+              </Button>
             </div>
 
             <div className="space-y-6">
@@ -105,37 +149,41 @@ const Profile = () => {
                           <Mail className="w-5 h-5 text-muted-foreground mt-0.5 mr-3" />
                           <div>
                             <div className="font-medium">Email</div>
-                            <div className="text-muted-foreground">john.doe@example.com</div>
+                            <div className="text-muted-foreground">{profile.email}</div>
                           </div>
                         </div>
-                        <div className="flex items-start">
-                          <Phone className="w-5 h-5 text-muted-foreground mt-0.5 mr-3" />
-                          <div>
-                            <div className="font-medium">Phone</div>
-                            <div className="text-muted-foreground">(123) 456-7890</div>
+                        {profile.phone && (
+                          <div className="flex items-start">
+                            <Phone className="w-5 h-5 text-muted-foreground mt-0.5 mr-3" />
+                            <div>
+                              <div className="font-medium">Phone</div>
+                              <div className="text-muted-foreground">{profile.phone}</div>
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex items-start">
-                          <MapPin className="w-5 h-5 text-muted-foreground mt-0.5 mr-3" />
-                          <div>
-                            <div className="font-medium">Location</div>
-                            <div className="text-muted-foreground">San Francisco, CA</div>
+                        )}
+                        {profile.location && (
+                          <div className="flex items-start">
+                            <MapPin className="w-5 h-5 text-muted-foreground mt-0.5 mr-3" />
+                            <div>
+                              <div className="font-medium">Location</div>
+                              <div className="text-muted-foreground">{profile.location}</div>
+                            </div>
                           </div>
-                        </div>
+                        )}
                       </div>
                     </CardContent>
                   </Card>
 
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Professional Summary</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-muted-foreground">
-                        Experienced software engineer with a passion for creating elegant, efficient solutions to complex problems. Specializing in web development with a focus on frontend technologies.
-                      </p>
-                    </CardContent>
-                  </Card>
+                  {profile.bio && (
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Professional Summary</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-muted-foreground">{profile.bio}</p>
+                      </CardContent>
+                    </Card>
+                  )}
 
                   <Card>
                     <CardHeader>
@@ -151,23 +199,6 @@ const Profile = () => {
                       </div>
                     </CardContent>
                   </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Education</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        <div>
-                          <div className="flex items-center justify-between">
-                            <div className="font-medium">University of California, Berkeley</div>
-                            <div className="text-sm text-muted-foreground">2014 - 2018</div>
-                          </div>
-                          <div className="text-muted-foreground">Bachelor of Science in Computer Science</div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
                 </>
               )}
 
@@ -177,56 +208,64 @@ const Profile = () => {
                     <CardTitle>Resume & Documents</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 flex justify-between items-center mb-4">
-                      <div className="flex items-center">
-                        <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary mr-3">
-                          <FileText size={20} />
+                    {profile.resume_url ? (
+                      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 flex justify-between items-center mb-4">
+                        <div className="flex items-center">
+                          <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary mr-3">
+                            <FileText size={20} />
+                          </div>
+                          <div>
+                            <div className="font-medium">Resume</div>
+                            <div className="text-xs text-muted-foreground">Uploaded resume</div>
+                          </div>
                         </div>
-                        <div>
-                          <div className="font-medium">John_Doe_Resume.pdf</div>
-                          <div className="text-xs text-muted-foreground">Uploaded on May 15, 2023</div>
-                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="flex items-center"
+                          onClick={() => window.open(profile.resume_url, '_blank')}
+                        >
+                          <Download size={16} className="mr-2" />
+                          Download
+                        </Button>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="flex items-center"
-                      >
-                        <Download size={16} className="mr-2" />
-                        Download
-                      </Button>
-                    </div>
+                    ) : null}
 
                     <div className="pt-4">
-                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="mx-auto h-12 w-12 text-gray-400"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                          />
-                        </svg>
-                        <div className="mt-2">
-                          <p className="text-sm text-gray-600">
-                            Upload additional documents
-                          </p>
-                          <p className="text-xs text-gray-500 mt-1">
-                            PDF, DOCX (Max 5MB)
-                          </p>
+                      <label htmlFor="resume-upload">
+                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-primary/50 transition-colors">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="mx-auto h-12 w-12 text-gray-400"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                            />
+                          </svg>
+                          <div className="mt-2">
+                            <p className="text-sm text-gray-600">
+                              {isUploading ? "Uploading..." : profile.resume_url ? "Update resume" : "Upload your resume"}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1">
+                              PDF, DOCX (Max 5MB)
+                            </p>
+                          </div>
                         </div>
-                        <input
-                          type="file"
-                          className="hidden"
-                          accept=".pdf,.docx,.doc"
-                        />
-                      </div>
+                      </label>
+                      <input
+                        id="resume-upload"
+                        type="file"
+                        className="hidden"
+                        accept=".pdf,.docx,.doc"
+                        onChange={handleFileUpload}
+                        disabled={isUploading}
+                      />
                     </div>
                   </CardContent>
                 </Card>
@@ -246,7 +285,7 @@ const Profile = () => {
                       <p className="text-muted-foreground text-sm mb-4">
                         You haven't applied to any positions yet. Browse available jobs to get started.
                       </p>
-                      <Button>Browse Jobs</Button>
+                      <Button onClick={() => navigate('/booths')}>Browse Booths</Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -294,26 +333,5 @@ const Profile = () => {
     </div>
   );
 };
-
-// Add the missing Calendar component
-const Calendar = ({ size, className }: { size: number; className: string }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-  >
-    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-    <line x1="16" y1="2" x2="16" y2="6"></line>
-    <line x1="8" y1="2" x2="8" y2="6"></line>
-    <line x1="3" y1="10" x2="21" y2="10"></line>
-  </svg>
-);
 
 export default Profile;
