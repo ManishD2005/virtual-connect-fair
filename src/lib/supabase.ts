@@ -1,17 +1,96 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-// Default to empty strings if environment variables are not available
-// This will allow the app to at least render, though Supabase functionality won't work
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+// Get environment variables or use mock values
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 // Log a warning if the environment variables are missing
-if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+if (!supabaseUrl || !supabaseAnonKey) {
   console.warn('Missing Supabase environment variables. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your environment.');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Create a dummy client for development if credentials are missing
+// This will allow the application to render without throwing errors
+let supabase;
+
+try {
+  if (supabaseUrl && supabaseAnonKey) {
+    supabase = createClient(supabaseUrl, supabaseAnonKey);
+  } else {
+    // Create a mock client that prevents runtime errors
+    supabase = {
+      auth: {
+        getSession: () => Promise.resolve({ data: { session: null }, error: null }),
+        onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+        signUp: () => Promise.resolve({ data: null, error: new Error('Supabase not configured') }),
+        signInWithPassword: () => Promise.resolve({ data: null, error: new Error('Supabase not configured') }),
+        signOut: () => Promise.resolve({ error: null }),
+      },
+      from: () => ({
+        select: () => ({
+          eq: () => ({
+            single: () => Promise.resolve({ data: null, error: new Error('Supabase not configured') }),
+            limit: () => Promise.resolve({ data: [], error: null }),
+          }),
+          limit: () => Promise.resolve({ data: [], error: null }),
+        }),
+        insert: () => Promise.resolve({ data: null, error: new Error('Supabase not configured') }),
+        update: () => ({
+          eq: () => ({
+            select: () => ({
+              single: () => Promise.resolve({ data: null, error: new Error('Supabase not configured') }),
+            }),
+          }),
+        }),
+      }),
+      storage: {
+        from: () => ({
+          upload: () => Promise.resolve({ error: new Error('Supabase not configured') }),
+          getPublicUrl: () => ({ data: { publicUrl: '' } }),
+        }),
+      },
+    };
+    console.warn('Using mock Supabase client. Authentication and database features will not work.');
+  }
+} catch (error) {
+  console.error('Error initializing Supabase client:', error);
+  // Fallback to mock client
+  supabase = {
+    auth: {
+      getSession: () => Promise.resolve({ data: { session: null }, error: null }),
+      onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+      signUp: () => Promise.resolve({ data: null, error: new Error('Supabase initialization failed') }),
+      signInWithPassword: () => Promise.resolve({ data: null, error: new Error('Supabase initialization failed') }),
+      signOut: () => Promise.resolve({ error: null }),
+    },
+    from: () => ({
+      select: () => ({
+        eq: () => ({
+          single: () => Promise.resolve({ data: null, error: new Error('Supabase initialization failed') }),
+          limit: () => Promise.resolve({ data: [], error: null }),
+        }),
+        limit: () => Promise.resolve({ data: [], error: null }),
+      }),
+      insert: () => Promise.resolve({ data: null, error: new Error('Supabase initialization failed') }),
+      update: () => ({
+        eq: () => ({
+          select: () => ({
+            single: () => Promise.resolve({ data: null, error: new Error('Supabase initialization failed') }),
+          }),
+        }),
+      }),
+    }),
+    storage: {
+      from: () => ({
+        upload: () => Promise.resolve({ error: new Error('Supabase initialization failed') }),
+        getPublicUrl: () => ({ data: { publicUrl: '' } }),
+      }),
+    },
+  };
+}
+
+export { supabase };
 
 // Types for our database tables
 export type Profile = {
