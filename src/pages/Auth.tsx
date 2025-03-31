@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
@@ -16,18 +15,21 @@ const Auth = () => {
   const [rememberMe, setRememberMe] = useState(false);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [type]);
-
-  useEffect(() => {
     if (user && !isLoading) {
-      navigate('/profile');
+      console.log('User authenticated, redirecting to profile');
+      setTimeout(() => {
+        navigate('/profile');
+      }, 300);
     }
   }, [user, isLoading, navigate]);
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await signIn(email, password);
+    try {
+      await signIn(email, password);
+    } catch (error) {
+      console.error('Login error:', error);
+    }
   };
 
   return (
