@@ -1,9 +1,9 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User, AuthError } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 import { Profile } from '@/lib/supabase';
+import { useSupabase } from './SupabaseContext';
 
 interface AuthContextProps {
   user: User | null;
@@ -47,19 +47,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [error, setError] = useState<AuthError | null>(null);
   const [userProfile, setUserProfile] = useState<Profile | null>(null);
   const { toast } = useToast();
-
-  // Check for environment variables
-  const hasSupabaseConfig = Boolean(
-    import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY
-  );
+  const { isMockMode } = useSupabase();
 
   useEffect(() => {
     const getSession = async () => {
       try {
         const { data, error } = await supabase.auth.getSession();
         
-        if (error && !hasSupabaseConfig) {
-          // Using mock data in development without Supabase
+        if (error && isMockMode) {
           console.log('Using mock auth data for development');
           return;
         }
@@ -103,11 +98,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => {
       data?.subscription.unsubscribe();
     };
-  }, [hasSupabaseConfig]);
+  }, [isMockMode]);
 
   const fetchUserProfile = async (userId: string) => {
     try {
-      if (!hasSupabaseConfig) {
+      if (isMockMode) {
         // Using mock profile in development
         setUserProfile(mockProfileData);
         return;
@@ -133,7 +128,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signUp = async (email: string, password: string, userData: any) => {
     setIsLoading(true);
     try {
-      if (!hasSupabaseConfig) {
+      if (isMockMode) {
         // Mock signup behavior
         await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
         
@@ -161,7 +156,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         toast({
           title: 'Registration successful',
-          description: 'Your account has been created successfully.',
+          description: 'Demo mode: Your account has been created successfully.',
         });
         
         return;
@@ -234,7 +229,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signIn = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      if (!hasSupabaseConfig) {
+      if (isMockMode) {
         // Mock signin behavior
         await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
         
@@ -251,7 +246,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         toast({
           title: 'Login successful',
-          description: 'Welcome back!',
+          description: 'Demo mode: Welcome back!',
         });
         
         return;
@@ -291,7 +286,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     try {
-      if (!hasSupabaseConfig) {
+      if (isMockMode) {
         // Mock signout behavior
         setUser(null);
         setSession(null);
@@ -299,7 +294,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         toast({
           title: 'Signed out',
-          description: 'You have been logged out successfully.',
+          description: 'Demo mode: You have been logged out successfully.',
         });
         
         return;
