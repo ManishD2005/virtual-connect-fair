@@ -9,7 +9,243 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      applications: {
+        Row: {
+          cover_letter: string | null
+          created_at: string | null
+          id: string
+          job_position_id: string
+          resume_url: string | null
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          cover_letter?: string | null
+          created_at?: string | null
+          id?: string
+          job_position_id: string
+          resume_url?: string | null
+          status: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          cover_letter?: string | null
+          created_at?: string | null
+          id?: string
+          job_position_id?: string
+          resume_url?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "applications_job_position_id_fkey"
+            columns: ["job_position_id"]
+            isOneToOne: false
+            referencedRelation: "job_positions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      booths: {
+        Row: {
+          cover_image: string
+          created_at: string | null
+          description: string | null
+          employee_count: string
+          id: string
+          industry: string
+          location: string
+          logo: string
+          name: string
+          owner_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          cover_image: string
+          created_at?: string | null
+          description?: string | null
+          employee_count: string
+          id?: string
+          industry: string
+          location: string
+          logo: string
+          name: string
+          owner_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          cover_image?: string
+          created_at?: string | null
+          description?: string | null
+          employee_count?: string
+          id?: string
+          industry?: string
+          location?: string
+          logo?: string
+          name?: string
+          owner_id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      event_registrations: {
+        Row: {
+          created_at: string | null
+          event_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          event_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          event_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_registrations_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          created_at: string | null
+          description: string
+          end_date: string
+          id: string
+          location: string | null
+          name: string
+          start_date: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description: string
+          end_date: string
+          id?: string
+          location?: string | null
+          name: string
+          start_date: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string
+          end_date?: string
+          id?: string
+          location?: string | null
+          name?: string
+          start_date?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      job_positions: {
+        Row: {
+          booth_id: string
+          created_at: string | null
+          description: string
+          employment_type: string
+          id: string
+          location: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          booth_id: string
+          created_at?: string | null
+          description: string
+          employment_type: string
+          id?: string
+          location: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          booth_id?: string
+          created_at?: string | null
+          description?: string
+          employment_type?: string
+          id?: string
+          location?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_positions_booth_id_fkey"
+            columns: ["booth_id"]
+            isOneToOne: false
+            referencedRelation: "booths"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          bio: string | null
+          company_name: string | null
+          created_at: string | null
+          email: string
+          first_name: string
+          id: string
+          industry: string | null
+          job_title: string | null
+          last_name: string
+          location: string | null
+          resume_url: string | null
+          role: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          bio?: string | null
+          company_name?: string | null
+          created_at?: string | null
+          email: string
+          first_name: string
+          id: string
+          industry?: string | null
+          job_title?: string | null
+          last_name: string
+          location?: string | null
+          resume_url?: string | null
+          role: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          bio?: string | null
+          company_name?: string | null
+          created_at?: string | null
+          email?: string
+          first_name?: string
+          id?: string
+          industry?: string | null
+          job_title?: string | null
+          last_name?: string
+          location?: string | null
+          resume_url?: string | null
+          role?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

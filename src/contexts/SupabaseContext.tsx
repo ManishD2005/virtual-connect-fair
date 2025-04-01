@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 interface SupabaseContextProps {
-  supabase: any;
+  supabase: typeof supabase;
   isMockMode: boolean;
 }
 
