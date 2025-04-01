@@ -25,8 +25,16 @@ export const SupabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     if (!hasSupabaseConfig) {
       console.log('Running in mock mode - using demo data');
       toast({
-        title: "Demo Mode Active",
-        description: "Running with mock data. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to connect to a real database.",
+        title: "Database Connection Required",
+        description: "Create a .env file with VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to connect to a real database. See .env.example for format.",
+        variant: "destructive",
+        duration: 10000,
+      });
+    } else {
+      console.log('Connected to Supabase database');
+      toast({
+        title: "Database Connected",
+        description: "Successfully connected to Supabase database.",
       });
     }
   }, [toast]);

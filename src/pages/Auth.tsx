@@ -1,20 +1,25 @@
+
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import SignUpForm from '@/components/auth/SignUpForm';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSupabase } from '@/contexts/SupabaseContext';
 
 const Auth = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const type = searchParams.get('type') || 'login';
   const { signIn, user, isLoading } = useAuth();
+  const { isMockMode } = useSupabase();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const [loginAttempted, setLoginAttempted] = useState(false);
 
   useEffect(() => {
+    // If user is already logged in, redirect to profile page
     if (user && !isLoading) {
       console.log('User authenticated, redirecting to profile');
       setTimeout(() => {
@@ -25,8 +30,17 @@ const Auth = () => {
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoginAttempted(true);
     try {
       await signIn(email, password);
+      
+      // Force navigation after a brief timeout
+      // This helps ensure navigation happens even if context updates are delayed
+      setTimeout(() => {
+        if (user) {
+          navigate('/profile');
+        }
+      }, 500);
     } catch (error) {
       console.error('Login error:', error);
     }
@@ -58,6 +72,11 @@ const Auth = () => {
                   <p className="text-muted-foreground">
                     Sign in to access your VirtualConnect account
                   </p>
+                  {isMockMode && (
+                    <div className="mt-2 p-2 bg-amber-50 border border-amber-200 rounded-md text-amber-700 text-sm">
+                      <strong>Database not connected:</strong> Create a .env file with your Supabase credentials to enable real database storage.
+                    </div>
+                  )}
                 </div>
 
                 <form onSubmit={handleLoginSubmit} className="space-y-4">
