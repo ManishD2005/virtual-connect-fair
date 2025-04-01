@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 interface SupabaseContextProps {
@@ -17,7 +17,7 @@ export const SupabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   useEffect(() => {
     // Check if we're in mock mode by looking for environment variables
     const hasSupabaseConfig = Boolean(
-      import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY
+      supabase
     );
     
     setIsMockMode(!hasSupabaseConfig);
