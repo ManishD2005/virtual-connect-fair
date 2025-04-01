@@ -1,77 +1,27 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import type { Database } from '@/integrations/supabase/types';
 
 // Re-export the supabase client
 export { supabase };
 
-// Types for our database tables
-export type Profile = {
-  id: string;
-  user_id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  role: 'jobseeker' | 'employer';
-  job_title: string | null;
-  industry: string | null;
-  company_name?: string | null;
-  location?: string | null;
-  bio?: string | null;
-  resume_url?: string | null;
-  created_at: string;
-  updated_at: string;
-};
+// Define types that match exactly what's in the database
+export type Profile = Database['public']['Tables']['profiles']['Row'];
+export type Booth = Database['public']['Tables']['booths']['Row'];
+export type JobPosition = Database['public']['Tables']['job_positions']['Row'];
+export type Application = Database['public']['Tables']['applications']['Row'];
+export type Event = Database['public']['Tables']['events']['Row'];
+export type EventRegistration = Database['public']['Tables']['event_registrations']['Row'];
 
-export type Booth = {
-  id: string;
-  name: string;
-  description?: string | null;
-  logo: string;
-  cover_image: string;
-  location: string;
-  industry: string;
-  employee_count: string;
-  owner_id: string;
-  created_at: string;
-  updated_at: string;
-};
+// Create a simple environment.d.ts file for TypeScript to recognize the env variables
+<lov-write file_path="src/env.d.ts">
+/// <reference types="vite/client" />
 
-export type JobPosition = {
-  id: string;
-  booth_id: string;
-  title: string;
-  description: string;
-  location: string;
-  employment_type: string;
-  created_at: string;
-  updated_at: string;
-};
+interface ImportMetaEnv {
+  readonly VITE_SUPABASE_URL: string;
+  readonly VITE_SUPABASE_ANON_KEY: string;
+}
 
-export type Application = {
-  id: string;
-  job_position_id: string;
-  user_id: string;
-  status: 'pending' | 'reviewing' | 'accepted' | 'rejected';
-  resume_url?: string | null;
-  cover_letter?: string | null;
-  created_at: string;
-  updated_at: string;
-};
-
-export type Event = {
-  id: string;
-  name: string;
-  description: string;
-  start_date: string;
-  end_date: string;
-  location?: string | null;
-  created_at: string;
-  updated_at: string;
-};
-
-export type EventRegistration = {
-  id: string;
-  event_id: string;
-  user_id: string;
-  created_at: string;
-};
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
