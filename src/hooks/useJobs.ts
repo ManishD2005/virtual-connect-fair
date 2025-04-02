@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, JobPosition } from '@/lib/supabase';
 
@@ -87,8 +86,7 @@ export const useJobs = () => {
           .select(`
             *,
             booths:booth_id (name)
-          `)
-          .order('created_at', { ascending: false });
+          `);
         
         if (error) {
           console.error('Error fetching jobs:', error);

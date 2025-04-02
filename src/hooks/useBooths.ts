@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, Booth } from '@/lib/supabase';
 
@@ -91,8 +90,7 @@ export const useBooths = () => {
       try {
         const { data, error } = await supabase
           .from('booths')
-          .select('*')
-          .order('created_at', { ascending: false });
+          .select('*');
         
         if (error) {
           console.error('Error fetching booths:', error);

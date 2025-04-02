@@ -35,8 +35,10 @@ const mockProfileData: Profile = {
   role: 'jobseeker',
   job_title: 'Software Engineer',
   industry: 'Technology',
+  company_name: 'Demo Company',
   location: 'Remote',
   bio: 'Mock user for development',
+  resume_url: null,
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
 };
