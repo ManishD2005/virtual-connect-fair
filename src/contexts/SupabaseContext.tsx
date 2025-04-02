@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -11,32 +11,17 @@ interface SupabaseContextProps {
 const SupabaseContext = createContext<SupabaseContextProps | undefined>(undefined);
 
 export const SupabaseProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isMockMode, setIsMockMode] = useState(false);
+  // Always use mock mode since we've removed Supabase integration
+  const [isMockMode, setIsMockMode] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check if we're in mock mode by looking for environment variables
-    const hasSupabaseConfig = Boolean(
-      supabase
-    );
-    
-    setIsMockMode(!hasSupabaseConfig);
-    
-    if (!hasSupabaseConfig) {
-      console.log('Running in mock mode - using demo data');
-      toast({
-        title: "Database Connection Required",
-        description: "Create a .env file with VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to connect to a real database. See .env.example for format.",
-        variant: "destructive",
-        duration: 10000,
-      });
-    } else {
-      console.log('Connected to Supabase database');
-      toast({
-        title: "Database Connected",
-        description: "Successfully connected to Supabase database.",
-      });
-    }
+    console.log('Running in mock mode - using demo data');
+    toast({
+      title: "Offline Mode Active",
+      description: "The application is running with mock data. You can implement your own database solution.",
+      duration: 10000,
+    });
   }, [toast]);
 
   return (
